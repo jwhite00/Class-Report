@@ -1,26 +1,27 @@
+---
 title: 'DataVis 599 B: TabularData Univariate Homework'
 author: 'Group 4: Haotian Bu, Aishe Memetova, Jon White, Vitalii Zakhozhyi'
 output:
   html_document:
     df_print: paged
+---
 
 
-Using the Seattle Sound Transit Data of October-November 2015, we will try to answer whether riders in Seattle still pay the transit fare using cash.
+Using the Seattle Sound Transit Data of October-November 2015, we will try to see where Link Light Rail riders are coming from.
 
 **Loading neccessary packages, calling dataset and preparing it for analysis**
 
 
-#INTRO: Loading Data and Describing the Data
+#Intro: Loading Data and Describing the Data
 <a id='intro'></a>
 
 ```{r}
-#Loading the Data
 mydata1=read.csv("https://raw.githubusercontent.com/jwhite00/VisualAnalytics_2_tabularData/master/data/newLinkData.csv")
 library(ggplot2)
 library(scales)
 ```
 
-#Table Prep:
+##Table Prep:
 ```{r freqTab_abs, eval=FALSE}
 absoluteT=table(mydata1$origin,exclude = '#NULL!')#saving absolute values table
 ToPlot=prop.table(absoluteT)# saving table of values as percentage of total
@@ -36,22 +37,20 @@ paletteHereNew=c('gray') # just one color
 
 #prepping GGPlot
 tableFreq=as.data.frame(ToPlot)
-names(tableFreq)=c("origin_mode","pct")
+names(tableFreq)=c("origin_loc","pct")
 
 tableFreq[order(-tableFreq$pct),]
 tableFreq0 = tableFreq[order(-tableFreq$pct),] #setup for allowing us to order
 ```
 
-
-
 [Go to table of contents.](#part1)
-#PART 1: GGPLOT
 <a id='part1'></a>
 
+#PART 1: Univariate GGPlot
 ```{r bar_gg, eval=FALSE}
 #base GGPLOT2 starts with a "base", telling WHAT VARIABLES TO PLOT
 base= ggplot(data = tableFreq0, 
-             aes(x = reorder(origin_mode,pct), #command for ordering
+             aes(x = reorder(origin_loc,pct), #command for ordering
                  y = pct)) 
 
 #initial bar graph
@@ -66,41 +65,22 @@ plot2 = plot1 + theme(panel.background = element_rect(fill = "white",
 
 #Adding Titles/Labels
 plot3 = plot2 + labs(title=titleText, 
-                     x ='origin Mode', 
-                     y = '%',
+                     x ='Origin Location', 
+                     y = '% of Riders',
                      caption = sourceText)
 
 plot4 = plot3 + scale_y_continuous(breaks=c(0,10, 20,30,40,50),
                                  limits = c(0, 50), # expand = c(0, 0),
                                  labels=scales::unit_format(suffix = '%')) 
 
-plot5= plot4 + geom_text(aes(y = pct , 
-                            label = paste0(round(pct,2), '%')),
-                        vjust=-1, # if flipping 'hjust'
-                        size = 3)
-plot5
-```
 
-#Reference Line
-```{r refl_gg, eval=FALSE}
-#adding a reference line
-plot6 = plot5 + geom_hline (yintercept = 20, #where
-                           linetype="dashed", 
-                           size=1.5, #thickness
-                           alpha=0.5) #transparency
-plot6
-```
-
-#Flipping Orientation
-```{r annot_gg, eval=FALSE}
-plot7 = plot4 + geom_text(aes(y = pct , 
+plot5 = plot4 + geom_text(aes(y = pct , 
                             label = paste0(round(pct,2), '%')),
                         hjust=-.1, # if flipping 'hjust'
                         size = 3)
-plot7 + coord_flip()
+plot6=plot5 + coord_flip()
+plot6
 ```
-
-
 
 
 
