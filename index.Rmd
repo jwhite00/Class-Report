@@ -9,82 +9,68 @@ output:
 
 Using the Seattle Sound Transit Data of October-November 2015, we will try to see where Link Light Rail riders are coming from.
 
-**Loading neccessary packages, calling dataset and preparing it for analysis**
-
 
 #Intro: Loading Data and Describing the Data
-<a id='intro'></a>
 
+Loading neccessary packages, calling dataset and preparing it for analysis
 ```{r}
 mydata1=read.csv("https://raw.githubusercontent.com/jwhite00/VisualAnalytics_2_tabularData/master/data/newLinkData.csv")
 library(ggplot2)
 library(scales)
 ```
 
-##Table Prep:
-```{r freqTab_abs, eval=FALSE}
-absoluteT=table(mydata1$origin,exclude = '#NULL!')#saving absolute values table
-ToPlot=prop.table(absoluteT)# saving table of values as percentage of total
-ToPlot=ToPlot*100# preparing labels (i.e. changing from decimal to percent)
-plotLabels=paste0(round(ToPlot,2),'%')  # labels for the slices
+#Table Prep:
+```{r freqTab_abs}
+absoluteT=table(mydata1$origin,exclude = '#NULL!')
+ToPlot=prop.table(absoluteT)
+ToPlot=ToPlot*100
+plotLabels=paste0(round(ToPlot,2),'%') 
 
-#Making the Title of the Chart
 titleText='Where are Link Light Rail Riders Coming From?'
 sourceText='Source: Sound Transit 2015 Onboard Survey Data'
 
-paletteHere=rainbow(length(ToPlot)) # customizing set of colors
-paletteHereNew=c('gray') # just one color
+paletteHereNew=c('gray') 
 
-#prepping GGPlot
 tableFreq=as.data.frame(ToPlot)
 names(tableFreq)=c("origin_loc","pct")
-
-tableFreq[order(-tableFreq$pct),]
-tableFreq0 = tableFreq[order(-tableFreq$pct),] #setup for allowing us to order
+tableFreq0 = tableFreq[order(-tableFreq$pct),]
 ```
 
-[Go to table of contents.](#part1)
-<a id='part1'></a>
 
-#PART 1: Univariate GGPlot
-```{r bar_gg, eval=FALSE}
-#base GGPLOT2 starts with a "base", telling WHAT VARIABLES TO PLOT
+#Univariate GGPlot
+```{r bar_gg}
 base= ggplot(data = tableFreq0, 
-             aes(x = reorder(origin_loc,pct), #command for ordering
+             aes(x = reorder(origin_loc,pct),
                  y = pct)) 
 
-#initial bar graph
 plot1 = base + geom_bar(fill ="gray",
-                        stat = 'identity') # y is just what it is!
+                        stat = 'identity') 
 
-#Use Less ink
 plot2 = plot1 + theme(panel.background = element_rect(fill = "white",
                                                     colour = "grey50"),
-                    plot.caption = element_text(hjust = 0), # default was 1
+                    plot.caption = element_text(hjust = 0), 
                     plot.title = element_text(hjust = 0.5))
 
-#Adding Titles/Labels
 plot3 = plot2 + labs(title=titleText, 
                      x ='Origin Location', 
                      y = '% of Riders',
                      caption = sourceText)
 
 plot4 = plot3 + scale_y_continuous(breaks=c(0,10, 20,30,40,50),
-                                 limits = c(0, 50), # expand = c(0, 0),
+                                 limits = c(0, 50), 
                                  labels=scales::unit_format(suffix = '%')) 
 
 
 plot5 = plot4 + geom_text(aes(y = pct , 
                             label = paste0(round(pct,2), '%')),
-                        hjust=-.1, # if flipping 'hjust'
+                        hjust=-.1,
                         size = 3)
+
 plot6=plot5 + coord_flip()
+
 plot6
 ```
 
 
 
 _____
-[Go to table of contents.](#part1)
-
-[Back to course schedule menu](https://evansdatascience.github.io/VisualAnalytics/)
